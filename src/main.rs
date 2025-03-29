@@ -1,5 +1,6 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
+use std::fs;
 
 struct Command {
     name: String,
@@ -16,6 +17,20 @@ impl Command {
         Self { name, args }
     }
 
+    // find the executable
+    fn find_executable(command: &str) -> Option<String> {
+        let path = std::env::var("PATH").unwrap_or_default();
+        let paths = path.split(':').collect::<Vec<&str>>();
+        for path in paths {
+            let full_path = format!("{}/{}", path, command);
+            if fs::metadata(&full_path).is_ok() {
+                return Some(full_path);
+            }
+        }
+        None
+    }
+    
+
     // exicute the command
     fn execute(&self) {
         match self.name.as_str() {
@@ -30,7 +45,12 @@ impl Command {
                     if let Some(details) = Self::get_command_details(&self.args[0]) {
                         println!("{}", details);
                     }
-                } else {
+                }
+                // if it is a executalbe file print the file path 
+                else if let Some(path) = Self::find_executable(&self.args[0]) {
+                    println!("{} is {}",self.args[0],path);
+                }
+                else {
                     println!("{}: not found", self.args[0]);
                 }
             }
