@@ -12,9 +12,23 @@ fn main() {
 
         let input = input.trim();
 
-        if input == "exit 0" {
-            break;
+        // spliting the txt into args
+        // if user inputs exit 0 exit will the the command and 0 will be the arg
+        let args: Vec<&str> = input.split_whitespace().collect();
+
+        let command = args[0];
+        let args = &args[1..];
+
+        match command{
+            "exit" => {
+                break;
+            }
+            "echo" => {
+                println!("{}", args.join(" "));
+            }
+            _ => {
+                println!("{}: command not found", command);
+            }
         }
-        println!("{}: command not found", input);
     }
 }
