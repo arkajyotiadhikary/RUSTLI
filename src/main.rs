@@ -55,7 +55,15 @@ impl Command {
                 }
             }
             _ => {
-                println!("{}: command not found", self.name);
+                // in others lets say we have a executable file in path. then we have to run that.
+                if let Some(path)=Self::find_executable(&self.name) {
+                    let mut command = std::process::Command::new(path);
+                    command.args(&self.args);
+                    command.spawn().unwrap().wait().unwrap();
+                }
+                else {
+                    println!("{}: command not found", self.name);
+                }
             }
         }
     }
